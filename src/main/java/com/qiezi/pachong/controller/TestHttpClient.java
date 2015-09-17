@@ -19,6 +19,7 @@ import org.htmlparser.tags.TableColumn;
 import org.htmlparser.tags.TableRow;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,14 +31,13 @@ import java.util.List;
  */
 public class TestHttpClient {
 
-    private String localFile = "./ttemp.html";
+    private String localFile = "./temp.html";
     private List<Title> resultList = new ArrayList<Title>();
 
     public static void main(String[] args) {
-        
-        int pageNum = Integer.parseInt(args[0]);    // 获取初始的参数
+//        int pageNum = Integer.parseInt(args[0]);    // 获取初始的参数
         TestHttpClient testHttpClient = new TestHttpClient();
-        testHttpClient.task(testHttpClient, pageNum);
+        testHttpClient.task(testHttpClient, 2);
         testHttpClient.printResult();
     }
 
@@ -52,7 +52,6 @@ public class TestHttpClient {
 
     // 返回当期页面的前100个
     public List<Title> downloadPage(int pageNo, TestHttpClient testHttpClient) {
-
         try {
             testHttpClient.get(pageNo);
             List<Title> result = testHttpClient.parserNum();
@@ -70,15 +69,15 @@ public class TestHttpClient {
         System.out.println(resultList.size());
         PrintWriter printWriter = null;
         try {
-            printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(new File("./result.txt"))),true);
+            printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(new File("./result.txt"))), true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("file not found");
         }
         for (Title title : resultList) {
-            printWriter.write(" 名称 " +title.getTitleName() +'\n');
-            printWriter.write("数量 " + title.getCommentNum() +'\n');
-            printWriter.write("网址 http://cl.youcl.biz/" + title.getUrl()+'\n');
+            printWriter.write("名称 " + title.getTitleName() + '\n');
+            printWriter.write("数量 " + title.getCommentNum() + '\n');
+            printWriter.write("网址 http://cl.youcl.biz/" + title.getUrl() + '\n');
             printWriter.write("*******************\n");
         }
         printWriter.close();
@@ -93,6 +92,7 @@ public class TestHttpClient {
     }
 
     public List<Title> parserNum() throws IOException, ParserException {
+
         String html = IOUtils.toString(new FileInputStream(localFile), "GB2312");
         List<Title> result = new ArrayList<Title>();
 
@@ -101,8 +101,8 @@ public class TestHttpClient {
         // 联合过滤来获取相应的列和行
         NodeFilter[] predicates = new NodeFilter[]{new TagNameFilter("tr"), new HasAttributeFilter("class", "tr3 t_one"), new HasAttributeFilter("align", "center")};
         NodeList trNodeList = parser.extractAllNodesThatMatch(new AndFilter(predicates));
-        for (int i = 0; i < trNodeList.size(); i++) {
 
+        for (int i = 0; i < trNodeList.size(); i++) {
             // 获取评论数量
             TableRow tableRow = (TableRow) trNodeList.elementAt(i);
             TableColumn[] tableColumn = tableRow.getColumns();
@@ -131,7 +131,7 @@ public class TestHttpClient {
                 return -(o1.getCommentNum() - o2.getCommentNum());
             }
         });
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 25; i++) {
             temp.add(list.get(i));
         }
         return temp;
@@ -147,8 +147,6 @@ public class TestHttpClient {
         try {
             System.out.println(response1.getStatusLine());
             HttpEntity entity1 = response1.getEntity();
-            // do something useful with the response body
-            // and ensure it is fully consumed
             InputStream content = entity1.getContent();
             // 将捕获的文件放到内容中去
             org.apache.commons.io.IOUtils.copy(content, new FileOutputStream(localFile));
