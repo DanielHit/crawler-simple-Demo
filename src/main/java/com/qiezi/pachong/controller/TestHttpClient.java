@@ -35,9 +35,9 @@ public class TestHttpClient {
     private List<Title> resultList = new ArrayList<Title>();
 
     public static void main(String[] args) {
-//        int pageNum = Integer.parseInt(args[0]);    // 获取初始的参数
+        int pageNum = Integer.parseInt(args[0]);    // 获取初始的参数
         TestHttpClient testHttpClient = new TestHttpClient();
-        testHttpClient.task(testHttpClient, 2);
+        testHttpClient.task(testHttpClient, pageNum);
         testHttpClient.printResult();
     }
 
